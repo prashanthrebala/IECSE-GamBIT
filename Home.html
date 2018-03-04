@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Inter Section Coding</title>
+	<link rel="stylesheet" type="text/css" href="css/pr.css" title="pr">
+	<link rel="stylesheet" type="text/css" href="css/fonts.css" title="fonts">
+
+	<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="js/dbContent.js"></script>
+	<script type="text/javascript" src="js/jquery.countdown.min.js"></script>
+	<script type="text/javascript" src="js/sha256.js"></script>
+	<script type="text/javascript" src="js/questions.js"></script>
+	<script type="text/javascript" src="js/theme.js"></script>
+	<script type="text/javascript" src="js/globalVars.js"></script>
+</head>
+<body>
+
+	<div id="gg">
+
+		<div id="successModal">
+			<div class="modalDiv" style="background-color: #27ae60;">
+				<div class="modalDivInner">Success</div>
+				<div align="center"><img src="img/tick.png" height="50px" width="50px"></div>
+			</div>
+		</div>
+
+		<div id="wrongAnswerModal">
+			<div class="modalDiv" style="background-color: #e74c3c;">
+				<div class="modalDivInner">Wrong Answer</div>
+				<div align="center"><img src="img/wrong.png" height="55px" width="55px"></div>
+			</div>
+		</div>
+
+		<div id="disqualifiedModal">
+			<div class="modalDiv" style="background-color: #e74c3c;">
+				<div class="modalDivInner">Contestant Disqualified</div>
+			</div>
+		</div>
+
+		<div class="titleBar">
+			<div class="sideBarHeader">
+				Problems
+			</div>
+			<div id="appHeaderID" class="appHeader">
+				Inter Section Coding
+			</div>
+			<div id="scoreDisplayID" class="scoreDisplay">
+				<div class="scoreDisplayText"><div id="sDinner1">score: </div></div>
+				<div class="scoreDisplayNumeric"><div id="sDinner2">0</div></div>
+			</div>
+			<div id="statCheckID" class="statCheck" onclick="openNav();">
+					&#9776;
+			</div>
+		</div>
+
+		<div id="mySidenav" class="sidenav">
+			<div class="closebtn" onclick="closeNav()">&times;</div>
+			<hr>
+			<div class="sideNavScoreText">score: </div>
+			<div id="myScore"></div>
+			<hr>
+			<div class="timeRemaining">
+				<div class="timeRemainingText">time remaining:</div>
+				<div id="countDown"></div>
+			</div>
+			<hr><br>
+			<div id="tableOfScoresID" class="tableOfScores">
+				
+			</div>
+		</div>
+
+		<div class="content">
+			<div id="sideBarID" class="sideBar">  </div>
+			<div class="questionDisplay">
+				<div id="questionDescriptionID" class="questionDescription">
+					Inter Section Coding is an app based coding contest held by IECSE Manipal.<br>
+					This contest is exclusively for the second and third year students of MIT<br>
+					The first round is an eliminator where multiple teams from each section will compete against each other<br>
+					If only a single team shows up for the contest from that section, that team qualifies for Round 2 by default if they manage to solve at least one question.<br>
+					The scoring of the questions is as follows:
+					<ul>
+						<li>Questions 1 and 2 are worth 300 points</li>
+						<li>Questions 3, 4 and 5 are worth 500 points</li>
+						<li>Questions 6, 7 and 8 are worth 700 points</li>
+						<li>Questions 9 and 10 are worth 1000 points</li>
+						<li>Questions 11, 12 and 13 are worth 1500 points</li>
+						<li>Question 14 is worth 1800 points</li>
+						<li>Question 15 is worth 2000 points</li>
+					</ul>
+					This contest follows a dynamic scoring.<br>
+					For every 1 minute, the score for a question decreases by 1% of the maximum score for that question.<br>
+					For every incorrect submission, the score for a question decreases by 5% of the maximum score for that question.<br>
+					The minimum you can score for any question is 30% of the maximum score for that question.<br>
+					<p align="center">Password for the PDF: <code><b><b>expedition7</b></b></code></p>
+					<p align="center">Click on any link on the left to view the question</p>
+				</div>
+				<div class="submissionZone">
+					<div style="width: 69%; float: left;">
+						<textarea placeholder="Enter your output here..." id="answerText"></textarea>
+					</div>
+					<div style="width: 10%; float: right;">
+						<button onclick="submit()" id="submitButton">Submit</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+</body>
+</html>
