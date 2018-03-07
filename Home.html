@@ -37,6 +37,17 @@
 			</div>
 		</div>
 
+		<div id="purchaseConfirmationModal">
+			<div class="modalDiv" style="height: 180px; width: 400px; background-color: #576574">
+				<div class="modalDivInner">Enter bid amount<br><small><small id="mulSpecifier">Multiplier: 2</small></small></div>
+				<div class="modalDivInner">
+					<div class="modalDivInnerInner"><textarea style="text-align: center; padding: 10px 0;" id="purchaseAmount"></textarea></div>
+					<div class="modalDivInnerInner" style="margin-left: 2.5%"><button onclick="confirmPurchase();">Buy</button></div>
+					<div class="modalDivInnerInner" style="margin-left: 2.5%"><button onclick="closePurchaseModal();">Cancel</button></div>
+				</div>
+			</div>
+		</div>
+
 		<div class="titleBar">
 			<div class="sideBarHeader">
 				Problems

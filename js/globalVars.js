@@ -10,28 +10,20 @@ function dropSpaceChars(string)
 }
 
 /*
-Question Link Format:
+Question Link Format
 <div id="qn13" class="questionLink" onclick="displayQuestion(13)">
 	<div id="qn13T" class="questionNumber">
 		Question 13
+	</div>
+	<div id="qn13S" class="questionStatus">
+		<div>
+			7
+		</div>
 	</div>
 </div>
 */
 
 var randomCounter = 0;
-
-function setTheme()
-{
-
-	var themeNo = new Date().getTime() % 4;
-	$('.questionLink').css("background-color", theme[themeNo]['dark']);
-	$('.sideBarHeader').css("background-color", theme[themeNo]['dark']);
-	$('.sideBar').css("background-color", theme[themeNo]['dark']);
-	$('.submissionZone').css("background-color", theme[themeNo]['dark']);
-	$('.statCheck').css("background-color", theme[themeNo]['light']);
-	$('.scoreDisplay').css("background-color", theme[themeNo]['light']);
-	$('.appHeader').css("background-color", theme[themeNo]['light']);
-}
 
 function setVariables()
 {
@@ -41,6 +33,7 @@ function setVariables()
 	{
 		questionLinksHTML += "<div id='qn" + i + "' class='questionLink' onclick='displayQuestion("+i+")'>";
 		questionLinksHTML += "<div id='qn" + i + "T' class='questionNumber'>Question " + i + "</div>";
+		questionLinksHTML += "<div id='qn" + i + "S' class='questionStatus'><div>" + (questions[i]['solved'] ? '&#10003;' : questions[i]['attempts']) + "</div></div>";
 		questionLinksHTML += "</div>" + (i == numberOfQuestions ? "<hr style='width: 100%;'>" : "<hr>");
 	}
 	$('#sideBarID').html(questionLinksHTML);
@@ -53,50 +46,11 @@ function setVariables()
 			$("#qn" + i + "T").css({'color' : '#FF3F2F'});
 	}
 
-	setTheme();
-
 	$('#countDown').countdown(participant['endTimeStamp'])
 	.on('update.countdown', function(event) 
 	{
 		var format = '%H:%M:%S';
 		$(this).html(event.strftime(format));
-		randomCounter++;
-		randomCounter %= 10;
-		if(randomCounter == 0 && new Date().getTime() < participant['latestTimeStamp'] && !participant['cheated'])
-		{
-			participant['cheated'] = true;
-			alert('The system time has been changed.');
-			$("#submitButton").css("pointer-events","none");
-			$("#disqualifiedModal").show();
-			openNav();
-			db.remove({}, { multi: true }, function (err, numRemoved) 
-			{
-				db.insert(
-				{
-					participant: participant,
-					questions: questions
-				}, function(err, newDocs){
-					console.log(err);
-					console.log(newDocs);
-				});
-			});
-		}
-		if(randomCounter == 0 && new Date().getTime() - participant['latestTimeStamp'] >= 60000)
-		{
-			participant['latestTimeStamp'] = new Date().getTime();
-			db.remove({}, { multi: true }, function (err, numRemoved) 
-			{
-				db.insert(
-				{
-					participant: participant,
-					questions: questions
-				}, function(err, newDocs){
-					console.log(err);
-					console.log(newDocs);
-				});
-			});
-		}
-
 	})
 	.on('finish.countdown', function(event) 
 	{
@@ -104,32 +58,19 @@ function setVariables()
 		$("#submitButton").css("pointer-events","none");
 		alert('Your time\'s up!');
 	});
-
-	if(participant['cheated'])
-	{
-		$("#disqualifiedModal").show();
-		openNav();
-		return;
-	}
-
+	nwin.show();
+	nwin.maximize();
 }
 
-function obtainableScore(n)
-{
-	var timeElapsedInMinutes = Math.floor((new Date().getTime() - participant['startTimeStamp']) / 60000);
-	var penalties = questions[n]['penalties'];
-	var maxScore = questions[n]['score'];
-	return Math.floor(Math.max(maxScore * (1 - 0.01 * timeElapsedInMinutes - 0.05 * penalties), 
-									maxScore * 0.3));
-}
+function obtainableScore(n){return questions[n]['score'];}
 
 function getTable()
 {
-	var tableContent = "<div class='tableOfScores'><div class='tableOfScoresRow'><div>Problem</div><div>Penalties</div><div>Score</div></div><hr>";
+	var tableContent = "<div class='tableOfScores'><div class='tableOfScoresRow'><div>Problem</div><div>Attempts</div><div>Score</div></div><hr>";
 	for(let i=1;i<=numberOfQuestions;i++)
 	{
 		var div1 = "<div>" + i + "</div>";
-		var div2 = "<div>" + questions[i]['penalties'] + "</div>";
+		var div2 = "<div>" + questions[i]['attempts'] + "</div>";
 		var div3 = "<div>" + (questions[i]['scored'] == 0 ? obtainableScore(i) : "<span style='color: #37B76C'>" + questions[i]['scored'] + "</span>") + "</div>";
 		tableContent += "<div class='tableOfScoresRow'>" + div1 + div2 + div3 + "</div><hr>";
 	}
@@ -144,6 +85,43 @@ function displayQuestion(n)
 	$('#appHeaderID').text("Question " + currentQuestion);
 	$('#questionDescriptionID').html(questionStatements[currentQuestion]);
 	$('#answerText').val('');
+	if(!questions[currentQuestion]['bought'])
+	{
+		$('#submitButton').text("Buy");
+		$('#answerText').prop({'placeholder': "Please buy this question first", 'disabled': true});
+	}
+	else
+	{
+		$('#submitButton').text("Submit");
+		$('#answerText').prop({'placeholder': "Enter your output here...", 'disabled': false});
+	}
+}
+
+function buyQuestion()
+{
+	$('#purchaseConfirmationModal').delay(100).fadeIn();
+}
+
+function confirmPurchase()
+{
+	var amount = $("#purchaseAmount").val();
+	if(amount.length <= 0 || parseInt(amount) && (parseInt(amount) > participant['currency'] || parseInt(amount) <= 0))
+	{
+		alert("Please enter a valid amount");
+		return;
+	}
+	if(confirm("Are you sure you want to buy it for " + amount + "?"))
+	{
+		questions[currentQuestion]['bought'] = true;
+		closePurchaseModal();
+		displayQuestion(currentQuestion);
+	}
+
+}
+
+function closePurchaseModal()
+{
+	$('#purchaseConfirmationModal').delay(100).fadeOut();
 }
 
 function openNav()
@@ -178,8 +156,14 @@ function submitX(callback)
 {
 	var typedAnswer = $('#answerText').val();
 
-	if(currentQuestion <= 0 || questions[currentQuestion]['solved'] || participant['cheated'])
+	if(currentQuestion <= 0 || questions[currentQuestion]['solved'])
 		return callback();
+
+	if(!questions[currentQuestion]['bought'])
+	{
+		buyQuestion();
+		return callback();
+	}
 
 	questions[currentQuestion]['attempted'] = true;
 

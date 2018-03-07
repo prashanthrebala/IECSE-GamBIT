@@ -1,6 +1,6 @@
 var currentQuestion = 0;
 var duration = 91;
-var numberOfQuestions = 15;
+var numberOfQuestions = 7;
 
 var participant = 
 
@@ -10,6 +10,7 @@ var participant =
 	'latestTimeStamp': 0,
 	'endTimeStamp' : 0,
 	'score': 0,
+	'currency': 1500,
 	'submissionHistory': [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]
 };
 
@@ -19,6 +20,6 @@ var DataStore = require('nedb');
 var path = require('path');
 var db = new DataStore(
 {
-	filename : path.join(ngui.App.dataPath, 'iecse-isc-18.db'),
+	filename : path.join(ngui.App.dataPath, 'gamBIT.db'),
 	autoload : true
 });
