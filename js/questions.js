@@ -64,240 +64,225 @@ var questions =
 
 		1 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 300,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
 			'multiplier' : 2
 
 		},
 
 		2 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 300,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
 			'multiplier' : 2
 
 		},
 
 		3 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 500,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
-			'multiplier' : 2
+			'multiplier' : 3
 
 		},
 
 		4 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 500,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
-			'multiplier' : 2
+			'multiplier' : 3
 
 		},
 
 		5 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 500,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
-			'multiplier' : 2
+			'multiplier' : 5
 
 		},
 
 		6 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 700,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
-			'multiplier' : 2
+			'multiplier' : 5
 
 		},
 
 		7 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 700,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
-			'multiplier' : 2
+			'multiplier' : 5
 
 		},
 
 		8 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 700,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
 			'multiplier' : 2
 
 		},
 
 		9 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 1000,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
 			'multiplier' : 2
 
 		},
 
 		10 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 1000,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
 			'multiplier' : 2
 
 		},
 
 		11 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 1500,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
 			'multiplier' : 2
 
 		},
 
 		12 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 1500,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
 			'multiplier' : 2
 
 		},
 
 		13 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 1500,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
 			'multiplier' : 2
 
 		},
 
 		14 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 1800,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
 			'multiplier' : 2
 
 		},
 		
 		15 : {
 
-			'attempts' : 0,
+			'attempts' : 3,
 			'solved' : false,
 			'bought' : false,
-			'score' : 2000,
+			'score' : 0,
 			'answer' : {
 				0 : "",
 				1 : "",
 				2 : ""
 			},
-			'scored' : 0,
 			'multiplier' : 2
 
 		}

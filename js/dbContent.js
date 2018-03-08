@@ -9,9 +9,7 @@ var participant =
 	'startTimeStamp': 0,
 	'latestTimeStamp': 0,
 	'endTimeStamp' : 0,
-	'score': 0,
-	'currency': 1500,
-	'submissionHistory': [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]
+	'currency': 1500
 };
 
 var ngui = require('nw.gui');

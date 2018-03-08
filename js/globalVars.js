@@ -33,17 +33,20 @@ function setVariables()
 	{
 		questionLinksHTML += "<div id='qn" + i + "' class='questionLink' onclick='displayQuestion("+i+")'>";
 		questionLinksHTML += "<div id='qn" + i + "T' class='questionNumber'>Question " + i + "</div>";
-		questionLinksHTML += "<div id='qn" + i + "S' class='questionStatus'><div>" + (questions[i]['solved'] ? '&#10003;' : questions[i]['attempts']) + "</div></div>";
+		questionLinksHTML += "<div id='qn" + i + "S' class='questionStatus'><div>" + 
+								(questions[i]['solved'] ? '&#10003;' : (questions[i]['bought'] ? questions[i]['attempts'] : "")) + "</div></div>";
 		questionLinksHTML += "</div>" + (i == numberOfQuestions ? "<hr style='width: 100%;'>" : "<hr>");
 	}
 	$('#sideBarID').html(questionLinksHTML);
 
-	for(let i=1;i<=numberOfQuestions;i++)
+	for(let i=1;i<=numberOfQuestions;i++) if(questions[i]['bought'])
 	{
 		if(questions[i]['solved'])
 			$("#qn" + i + "T").css({'color' : '#37B76C'});
-		else if(questions[i]['attempted'])
+		else if(questions[i]['attempts'] == 0)
 			$("#qn" + i + "T").css({'color' : '#FF3F2F'});
+		else
+			$("#qn" + i + "T").css({'color' : '#FED330'});
 	}
 
 	$('#countDown').countdown(participant['endTimeStamp'])
@@ -66,12 +69,25 @@ function obtainableScore(n){return questions[n]['score'];}
 
 function getTable()
 {
-	var tableContent = "<div class='tableOfScores'><div class='tableOfScoresRow'><div>Problem</div><div>Attempts</div><div>Score</div></div><hr>";
+	var tableContent = "<div class='tableOfScores'><div class='tableOfScoresRow'><div>Problem</div><div>Multiplier</div><div>Score</div></div><hr>";
 	for(let i=1;i<=numberOfQuestions;i++)
 	{
 		var div1 = "<div>" + i + "</div>";
-		var div2 = "<div>" + questions[i]['attempts'] + "</div>";
-		var div3 = "<div>" + (questions[i]['scored'] == 0 ? obtainableScore(i) : "<span style='color: #37B76C'>" + questions[i]['scored'] + "</span>") + "</div>";
+		var div2 = "<div>" + questions[i]['multiplier'] + "</div>";
+		var div3 = "<div>";
+		if(questions[i]['bought'])
+		{
+			if(questions[i]['solved'])
+				div3 += "<span style='color: #37B76C'>" + questions[i]['score'] + "</span>";
+			else if(questions[i]['attempts'] == 0)
+				div3 += "<span style='color: #FF3F2F'>" + (questions[i]['score'] / questions[i]['multiplier']) + "</span>";
+			else
+				div3 += "<span style='color: #FED330'>" + questions[i]['score'] + "</span>";
+		}
+		else
+			div3 += "0";
+		div3 += "</div>";
+
 		tableContent += "<div class='tableOfScoresRow'>" + div1 + div2 + div3 + "</div><hr>";
 	}
 	tableContent += "</div>";
@@ -99,13 +115,14 @@ function displayQuestion(n)
 
 function buyQuestion()
 {
+	$('#mulSpecifier').text("Multiplier: " + questions[currentQuestion]['multiplier']);
 	$('#purchaseConfirmationModal').delay(100).fadeIn();
 }
 
 function confirmPurchase()
 {
-	var amount = $("#purchaseAmount").val();
-	if(amount.length <= 0 || parseInt(amount) && (parseInt(amount) > participant['currency'] || parseInt(amount) <= 0))
+	var amount = parseInt($("#purchaseAmount").val());
+	if(!amount || amount <= 0 || amount > participant['currency'])
 	{
 		alert("Please enter a valid amount");
 		return;
@@ -113,20 +130,23 @@ function confirmPurchase()
 	if(confirm("Are you sure you want to buy it for " + amount + "?"))
 	{
 		questions[currentQuestion]['bought'] = true;
+		questions[currentQuestion]['score'] = questions[currentQuestion]['multiplier'] * amount;
+		participant['currency'] -= amount;
+		var id = "#qn"+currentQuestion+"T";
+		$(id).css({'border' : '2px solid #FF3F2F', 'color' : '#FF3F2F'});
+		$(id + " > div").text(questions[currentQuestion]['attempts']);
+		$('#sDinner2').text(participant['currency']);
 		closePurchaseModal();
 		displayQuestion(currentQuestion);
 	}
-
 }
 
 function closePurchaseModal()
-{
-	$('#purchaseConfirmationModal').delay(100).fadeOut();
-}
+{	$('#purchaseConfirmationModal').delay(100).fadeOut();}
 
 function openNav()
 { 
-	$('#myScore').text(participant['score']);
+	$('#myScore').text(participant['currency']);
 	$('#tableOfScoresID').html(getTable());
 	$('#mySidenav').css({'width' : '28%', 'transition' : '0.3s'});
 }
@@ -174,30 +194,27 @@ function submitX(callback)
 	if(typedAnswer.length <= 0)
 		return callback();
 
-	var hashedAnswer = Sha256.hash(typedAnswer);
+	// var hashedAnswer = Sha256.hash(typedAnswer);
 
-	if(participant['submissionHistory'][currentQuestion].indexOf(hashedAnswer) >= 0)
-		if(!confirm("You have already submitted this answer for this question. Are you sure you want to submit again?"))
-			return callback();
-
-	participant['submissionHistory'][currentQuestion].push(hashedAnswer);
-
-	if(hashedAnswer === questions[currentQuestion]['answer']) 
+	// if(hashedAnswer === questions[currentQuestion]['answer']) 
+	if("aeiou".indexOf(typedAnswer) >= 0)
 	{
 		$('#successModal').delay(100).fadeIn();
 		$('#successModal').delay(300).fadeOut();
-		$(id).css({'color' : '#37B76C'});
+		$(id).css({'border' : '2px solid #37B76C', 'color' : '#37B76C'});
+		$(id + " > div").html('&#10003;');
 		questions[currentQuestion]['solved'] = true;
 		questions[currentQuestion]['scored'] = obtainableScore(currentQuestion);
-		participant['score'] += questions[currentQuestion]['scored'];
-		$('#sDinner2').text(participant['score']);
+		participant['currency'] += questions[currentQuestion]['score'];
+		$('#sDinner2').text(participant['currency']);
 	}
 	else
 	{
 		$('#wrongAnswerModal').delay(100).fadeIn();
 		$('#wrongAnswerModal').delay(300).fadeOut();
-		questions[currentQuestion]['penalties']++;
-		$(id).css({'color' : '#FF3F2F'});
+		questions[currentQuestion]['attempts']--;
+		$(id).css({'border' : '2px solid #FF3F2F', 'color' : '#FF3F2F'});
+		$(id + " > div").text(questions[currentQuestion]['attempts']);
 	}
 	callback();
 }
@@ -222,7 +239,7 @@ function launchApp()
 			participant = docs[0].participant;
 			questions   = docs[0].questions;
 
-			$('#sDinner2').text(participant['score']);
+			$('#sDinner2').text(participant['currency']);
 			setVariables();
 		}
 	});
