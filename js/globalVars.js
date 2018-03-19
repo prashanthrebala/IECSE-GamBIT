@@ -42,11 +42,11 @@ function setVariables()
 	for(let i=1;i<=numberOfQuestions;i++) if(questions[i]['bought'])
 	{
 		if(questions[i]['solved'])
-			$("#qn" + i + "T").css({'color' : '#37B76C'});
+			$("#qn" + i + "S").css({'border' : '2px solid #37B76C', 'color' : '#37B76C'});
 		else if(questions[i]['attempts'] == 0)
-			$("#qn" + i + "T").css({'color' : '#FF3F2F'});
+			$("#qn" + i + "S").css({'border' : '2px solid #FF3F2F', 'color' : '#FF3F2F'});
 		else
-			$("#qn" + i + "T").css({'color' : '#FED330'});
+			$("#qn" + i + "S").css({'border' : '2px solid #f7b731', 'color' : '#f7b731'});
 	}
 
 	$('#countDown').countdown(participant['endTimeStamp'])
@@ -82,7 +82,7 @@ function getTable()
 			else if(questions[i]['attempts'] == 0)
 				div3 += "<span style='color: #FF3F2F'>" + (questions[i]['score'] / questions[i]['multiplier']) + "</span>";
 			else
-				div3 += "<span style='color: #FED330'>" + questions[i]['score'] + "</span>";
+				div3 += "<span style='color: #f7b731'>" + questions[i]['score'] + "</span>";
 		}
 		else
 			div3 += "0";
@@ -116,6 +116,7 @@ function displayQuestion(n)
 function buyQuestion()
 {
 	$('#mulSpecifier').text("Multiplier: " + questions[currentQuestion]['multiplier']);
+	$("#purchaseAmount").val('');
 	$('#purchaseConfirmationModal').delay(100).fadeIn();
 }
 
@@ -132,12 +133,13 @@ function confirmPurchase()
 		questions[currentQuestion]['bought'] = true;
 		questions[currentQuestion]['score'] = questions[currentQuestion]['multiplier'] * amount;
 		participant['currency'] -= amount;
-		var id = "#qn"+currentQuestion+"T";
-		$(id).css({'border' : '2px solid #FF3F2F', 'color' : '#FF3F2F'});
+		var id = "#qn"+currentQuestion+"S";
+		$(id).css({'border' : '2px solid #f7b731', 'color' : '#f7b731'});
 		$(id + " > div").text(questions[currentQuestion]['attempts']);
 		$('#sDinner2').text(participant['currency']);
 		closePurchaseModal();
 		displayQuestion(currentQuestion);
+		submit(false);
 	}
 }
 
@@ -154,16 +156,16 @@ function openNav()
 function closeNav()
 { 	$('#mySidenav').css({'width' : '0', 'transition' : '0.0s'});}
 
-function submit()
+function submit(byUser)
 {
-	submitX(function()
+	submitX(byUser, function()
 	{
 		db.remove({}, { multi: true }, function (err, numRemoved) 
 		{
 			db.insert(
 			{
-				participant: participant,
-				questions: questions
+				participant: sjcl.encrypt(author, JSON.stringify(participant)),
+				questions: sjcl.encrypt(author, JSON.stringify(questions))
 			}, function(err, newDocs){
 				console.log(err);
 				console.log(newDocs);
@@ -172,11 +174,14 @@ function submit()
 	});
 }
 
-function submitX(callback) 
+function submitX(byUser, callback) 
 {
+
+	if(!byUser) return callback();
+
 	var typedAnswer = $('#answerText').val();
 
-	if(currentQuestion <= 0 || questions[currentQuestion]['solved'])
+	if(currentQuestion <= 0 || questions[currentQuestion]['solved'] || questions[currentQuestion]['attempts'] <= 0)
 		return callback();
 
 	if(!questions[currentQuestion]['bought'])
@@ -187,7 +192,7 @@ function submitX(callback)
 
 	questions[currentQuestion]['attempted'] = true;
 
-	var id = "#qn"+currentQuestion+"T";
+	var id = "#qn"+currentQuestion+"S";
 
 	typedAnswer = dropSpaceChars(typedAnswer);
 
@@ -213,8 +218,11 @@ function submitX(callback)
 		$('#wrongAnswerModal').delay(100).fadeIn();
 		$('#wrongAnswerModal').delay(300).fadeOut();
 		questions[currentQuestion]['attempts']--;
-		$(id).css({'border' : '2px solid #FF3F2F', 'color' : '#FF3F2F'});
 		$(id + " > div").text(questions[currentQuestion]['attempts']);
+		if(questions[currentQuestion]['attempts'] != 0)
+			$(id).css({'border' : '2px solid #f7b731', 'color' : '#f7b731'});
+		else
+			$(id).css({'border' : '2px solid #FF3F2F', 'color' : '#FF3F2F'});
 	}
 	callback();
 }
@@ -230,15 +238,14 @@ function launchApp()
 			participant['endTimeStamp']   = participant['startTimeStamp'] + duration * 60000;
 			db.insert(
 			{
-				participant: participant,
-				questions: questions
+				participant: sjcl.encrypt(author, JSON.stringify(participant)),
+				questions: sjcl.encrypt(author, JSON.stringify(questions))
 			},function(err, newDocs){	setVariables();	});
 		}
 		else
 		{
-			participant = docs[0].participant;
-			questions   = docs[0].questions;
-
+			participant = JSON.parse(sjcl.decrypt(author, docs[0].participant));
+			questions   = JSON.parse(sjcl.decrypt(author, docs[0].questions));
 			$('#sDinner2').text(participant['currency']);
 			setVariables();
 		}
