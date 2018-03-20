@@ -5,9 +5,7 @@ var numberOfQuestions = 7;
 var participant = 
 
 {
-	'cheated': false,
 	'startTimeStamp': 0,
-	'latestTimeStamp': 0,
 	'endTimeStamp' : 0,
 	'currency': 1500
 };
