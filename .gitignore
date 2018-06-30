@@ -1,2 +1,4 @@
-nw
-package.json
+nw/
+node_modules/
+*.pdf
+build/

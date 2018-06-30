@@ -1,6 +1,15 @@
 
 function isSpaceChar(char){ return (char < 33 || char > 126);}
 
+function trimlines(string)
+{
+	var lines = string.split("\n");
+	var ret = "";
+	for(let i=0;i<lines.length;i++)
+		ret += dropSpaceChars(lines[i]) + "\n";
+	return dropSpaceChars(ret);
+}
+
 function dropSpaceChars(string)
 {
 	var x = 0, y = string.length - 1;
@@ -65,8 +74,6 @@ function setVariables()
 	nwin.maximize();
 }
 
-function obtainableScore(n){return questions[n]['score'];}
-
 function getTable()
 {
 	var tableContent = "<div class='tableOfScores'><div class='tableOfScoresRow'><div>Problem</div><div>Multiplier</div><div>Score</div></div><hr>";
@@ -99,7 +106,18 @@ function displayQuestion(n)
 	closeNav();
 	currentQuestion = n;
 	$('#appHeaderID').text("Question " + currentQuestion);
-	$('#questionDescriptionID').html(questionStatements[currentQuestion]);
+	if(questions[currentQuestion]['solved'])
+		$('#questionDescriptionID').html(questionStatements[currentQuestion] + "<br><br><br> You have solved this question");
+	else if(questions[currentQuestion]['bought'])
+	{
+		let remainingAttempts = questions[currentQuestion]['attempts'];
+		if(remainingAttempts > 0)
+			$('#questionDescriptionID').html(questionStatements[currentQuestion] + "<h4>Test Case</h4>" + testcases[currentQuestion][3 - remainingAttempts]);
+		else
+			$('#questionDescriptionID').html(questionStatements[currentQuestion] + "<h4>Test Case</h4>" + "You're out of attempts :(");
+	}
+	else
+		$('#questionDescriptionID').html(questionStatements[currentQuestion] + "<br><br><br><b>Please buy the question to view the test case</b>");
 	$('#answerText').val('');
 	if(!questions[currentQuestion]['bought'])
 	{
@@ -120,6 +138,21 @@ function buyQuestion()
 	$('#purchaseConfirmationModal').delay(100).fadeIn();
 }
 
+function sellQuestion(string)
+{
+	let index = participant['encrypted'].indexOf(string);
+	if(index >= 0 && questions[currentQuestion]['attempts'] == 0)
+	{
+		participant['encrypted'].splice(index, 1);
+		participant['currency'] += questions[currentQuestion]['score'] / questions[currentQuestion]['multiplier'];
+		$('#sDinner2').text(participant['currency']);
+		$('#answerText').val('');
+		alert("You have received " + (questions[currentQuestion]['score'] / questions[currentQuestion]['multiplier']) + " coins");
+		return true;
+	}
+	return false;
+}
+
 function confirmPurchase()
 {
 	var amount = parseInt($("#purchaseAmount").val());
@@ -128,7 +161,7 @@ function confirmPurchase()
 		alert("Please enter a valid amount");
 		return;
 	}
-	if(confirm("Are you sure you want to buy it for " + amount + "?"))
+	if(confirm("Are you sure you want to buy it for " + amount + " coins?"))
 	{
 		questions[currentQuestion]['bought'] = true;
 		questions[currentQuestion]['score'] = questions[currentQuestion]['multiplier'] * amount;
@@ -179,10 +212,11 @@ function submitX(byUser, callback)
 
 	if(!byUser) return callback();
 
-	var typedAnswer = $('#answerText').val();
-
-	if(currentQuestion <= 0 || questions[currentQuestion]['solved'] || questions[currentQuestion]['attempts'] <= 0)
+	if(currentQuestion <= 0)
 		return callback();
+
+	var typedAnswer = $('#answerText').val();
+	typedAnswer = trimlines(typedAnswer);
 
 	if(!questions[currentQuestion]['bought'])
 	{
@@ -190,26 +224,30 @@ function submitX(byUser, callback)
 		return callback();
 	}
 
+	if(typedAnswer.length <= 0)
+		return callback();
+
+	var hashedAnswer = Sha256.hash(typedAnswer);
+
+	if(sellQuestion(hashedAnswer))
+		return callback();
+
+	if(questions[currentQuestion]['solved'] || questions[currentQuestion]['attempts'] <= 0)
+		return callback();
+
 	questions[currentQuestion]['attempted'] = true;
 
 	var id = "#qn"+currentQuestion+"S";
 
-	typedAnswer = dropSpaceChars(typedAnswer);
-
-	if(typedAnswer.length <= 0)
-		return callback();
-
-	// var hashedAnswer = Sha256.hash(typedAnswer);
-
-	// if(hashedAnswer === questions[currentQuestion]['answer']) 
-	if("aeiou".indexOf(typedAnswer) >= 0)
+	// if("aeiou".indexOf(typedAnswer) >= 0)
+	if(hashedAnswer === questions[currentQuestion]['answer'][3 - questions[currentQuestion]['attempts']]) 
 	{
 		$('#successModal').delay(100).fadeIn();
 		$('#successModal').delay(300).fadeOut();
 		$(id).css({'border' : '2px solid #37B76C', 'color' : '#37B76C'});
 		$(id + " > div").html('&#10003;');
 		questions[currentQuestion]['solved'] = true;
-		questions[currentQuestion]['scored'] = obtainableScore(currentQuestion);
+		questions[currentQuestion]['scored'] = questions[currentQuestion]['score'];
 		participant['currency'] += questions[currentQuestion]['score'];
 		$('#sDinner2').text(participant['currency']);
 	}
@@ -224,6 +262,7 @@ function submitX(byUser, callback)
 		else
 			$(id).css({'border' : '2px solid #FF3F2F', 'color' : '#FF3F2F'});
 	}
+	displayQuestion(currentQuestion);
 	callback();
 }
 
@@ -258,5 +297,5 @@ $(document).ready(function()
 	catch(err){ console.log(err); }
 });
 
-// document.addEventListener('contextmenu', event => event.preventDefault());
+document.addEventListener('contextmenu', event => event.preventDefault());
 

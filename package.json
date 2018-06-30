@@ -1,0 +1,28 @@
+{
+  "name": "gambit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Login.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prashanthrebala/IECSE-GamBIT.git"
+  },
+  "keywords": [
+    "iecse",
+    "prometheus",
+    "round1",
+    "gambit"
+  ],
+  "author": "prashanthrebala",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prashanthrebala/IECSE-GamBIT/issues"
+  },
+  "homepage": "https://github.com/prashanthrebala/IECSE-GamBIT#readme",
+  "dependencies": {
+    "nedb": "^1.8.0"
+  }
+}

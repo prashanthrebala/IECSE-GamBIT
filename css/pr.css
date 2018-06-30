@@ -79,6 +79,14 @@ code {
 
 }
 
+.backdrop {
+	height: 100%;
+	width: 100%;
+	background-image: url(../img/777.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
 .lockScreen {
 	z-index: 10;
 	width: 100%;
@@ -86,11 +94,6 @@ code {
 	background-color: #0F0D08;
 	opacity: 0.96;
 	display: flex;
-}
-
-#iecseLogo {
-	height: 300px;
-	width: 400px;
 }
 
 .w3-center {
